@@ -1,4 +1,4 @@
-# QBIQ — Mini E-Commerce Platform
+# QBIQ Dig Store — Mini E-Commerce Platform
 
 Full-stack digital products shop with a **FastAPI** backend, **Vue 3** frontend, **MongoDB** persistence, **Redis** caching and cart sessions, and **Docker Compose** for local deployment.
 
@@ -67,8 +67,8 @@ App: http://localhost:5173
 ### 1. Start MongoDB and Redis
 
 ```bash
-docker run -d --name qbiq-mongo -p 27017:27017 mongo:8.0.4-noble
-docker run -d --name qbiq-redis -p 6379:6379 redis:8.0.2-alpine
+docker run -d --name qbiq-dig-store-mongo -p 27017:27017 mongo:8.0.4-noble
+docker run -d --name qbiq-dig-store-redis -p 6379:6379 redis:8.0.2-alpine
 ```
 
 ### 2. Backend
@@ -141,7 +141,7 @@ Interactive docs: http://localhost:8000/docs
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `MONGODB_URL` | `mongodb://localhost:27017` | MongoDB connection string |
-| `MONGODB_DB_NAME` | `qbiq` | Database name |
+| `MONGODB_DB_NAME` | `qbiq_dig_store` | Database name |
 | `REDIS_URL` | `redis://localhost:6379` | Redis connection string |
 | `CACHE_TTL_SECONDS` | `300` | Product cache TTL |
 | `CART_SESSION_TTL_SECONDS` | `86400` | Cart session TTL (24h) |
@@ -191,7 +191,7 @@ Bump versions intentionally via commit — never rely on floating tags in produc
 ## Project structure
 
 ```
-qbiq/
+qbiq-dig-store/
 ├── backend/                 # FastAPI + Beanie + Redis
 ├── frontend/                # Vue 3 + Vite + Pinia
 ├── terraform/               # GCE VM + firewall + IAM
@@ -226,7 +226,7 @@ flowchart LR
 2. Enable APIs: **Compute Engine**, **Artifact Registry**, **IAM**.
 3. Create an Artifact Registry repository:
    ```bash
-   gcloud artifacts repositories create qbiq \
+   gcloud artifacts repositories create qbiq-dig-store \
      --repository-format=docker \
      --location=us-central1
    ```
@@ -272,7 +272,7 @@ Outputs include `public_ip`, `app_url`, and `ssh_command`.
 
 ### Production compose
 
-On the VM, `/opt/qbiq/docker-compose.prod.yml` runs:
+On the VM, `/opt/qbiq-dig-store/docker-compose.prod.yml` runs:
 
 - **gateway** — nginx on port 80 (`/` → frontend, `/api` → backend)
 - **frontend** — static SPA (built with `VITE_API_BASE_URL=/api`)
@@ -285,8 +285,8 @@ See `deploy/.env.prod.example` for required environment variables.
 Redeploy a previous commit SHA:
 
 ```bash
-# On VM, set IMAGE_TAG to a previous git SHA in /opt/qbiq/.env.prod
-sudo REGISTRY=... IMAGE_TAG=<previous-sha> /opt/qbiq/remote-deploy.sh
+# On VM, set IMAGE_TAG to a previous git SHA in /opt/qbiq-dig-store/.env.prod
+sudo REGISTRY=... IMAGE_TAG=<previous-sha> /opt/qbiq-dig-store/remote-deploy.sh
 ```
 
 Or re-run the deploy workflow on an earlier commit via **workflow_dispatch**.

@@ -18,7 +18,7 @@ variable "zone" {
 variable "instance_name" {
   description = "Name prefix for compute resources"
   type        = string
-  default     = "qbiq-app"
+  default     = "qbiq-dig-store-app"
 }
 
 variable "machine_type" {

@@ -15,7 +15,7 @@ const { itemCount } = storeToRefs(cartStore)
   >
     <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
       <RouterLink to="/products" class="text-lg font-semibold tracking-tight text-primary">
-        QBIQ
+        QBIQ Dig Store
       </RouterLink>
       <nav class="flex items-center gap-4 text-sm font-medium" aria-label="Main navigation">
         <RouterLink

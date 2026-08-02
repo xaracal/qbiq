@@ -1,6 +1,6 @@
 resource "google_service_account" "vm" {
   account_id   = "${var.instance_name}-sa"
-  display_name = "QBIQ application VM service account"
+  display_name = "QBIQ Dig Store application VM service account"
 }
 
 resource "google_project_iam_member" "artifact_reader" {

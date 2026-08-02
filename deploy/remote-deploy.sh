@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEPLOY_DIR="/opt/qbiq"
+DEPLOY_DIR="/opt/qbiq-dig-store"
 COMPOSE_FILE="${DEPLOY_DIR}/docker-compose.prod.yml"
 ENV_FILE="${DEPLOY_DIR}/.env.prod"
 REGISTRY="${REGISTRY:?REGISTRY is required}"

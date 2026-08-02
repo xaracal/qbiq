@@ -6,7 +6,7 @@ from app.api.routes.cart import router as cart_router
 from app.api.routes.products import router as products_router
 from app.core.config import settings
 from app.db.lifespan import lifespan
-app = FastAPI(title="QBIQ E-Commerce API", lifespan=lifespan)
+app = FastAPI(title="QBIQ Dig Store API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

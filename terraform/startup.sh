@@ -18,10 +18,10 @@ echo \
 apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-mkdir -p /opt/qbiq
-chmod 755 /opt/qbiq
+mkdir -p /opt/qbiq-dig-store
+chmod 755 /opt/qbiq-dig-store
 
 systemctl enable docker
 systemctl start docker
 
-echo "Docker and /opt/qbiq ready. Deploy via GitHub Actions or manual compose up."
+echo "Docker and /opt/qbiq-dig-store ready. Deploy via GitHub Actions or manual compose up."

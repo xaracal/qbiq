@@ -8,7 +8,7 @@ resource "google_compute_firewall" "http" {
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["qbiq-app"]
+  target_tags   = ["qbiq-dig-store-app"]
 }
 
 resource "google_compute_firewall" "ssh" {
@@ -21,5 +21,5 @@ resource "google_compute_firewall" "ssh" {
   }
 
   source_ranges = [var.allowed_ssh_cidr]
-  target_tags   = ["qbiq-app"]
+  target_tags   = ["qbiq-dig-store-app"]
 }
