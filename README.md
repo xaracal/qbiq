@@ -209,7 +209,7 @@ qbiq/
 | 3 | Done | Frontend types, API client, router, store |
 | 4 | Done | Product list, detail, cart pages + Sky UI |
 | 5 | Done | Docker Compose, tests, documentation |
-| 6 | Pending | Network retry / offline resilience |
+| 6 | Done | Network retry / offline resilience |
 | 7 | Pending | Terraform + GCP + GitHub Actions deploy |
 
 ## License

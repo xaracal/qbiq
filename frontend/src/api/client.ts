@@ -2,6 +2,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 
 import { ApiError } from '@/api/errors'
 import { getCartSessionId } from '@/api/session'
+import { useNetworkStore } from '@/stores/network'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
 
@@ -13,15 +14,34 @@ export const apiClient = axios.create({
   },
 })
 
+function markOnline() {
+  useNetworkStore().setOffline(false)
+}
+
+function markOffline() {
+  useNetworkStore().setOffline(true)
+}
+
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   config.headers.set('X-Cart-Session-Id', getCartSessionId())
   return config
 })
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    markOnline()
+    return response
+  },
   (error: AxiosError<{ detail?: string }>) => {
+    if (error.code === 'ECONNABORTED') {
+      markOffline()
+      return Promise.reject(
+        new ApiError('Request timed out. Please try again.', undefined, 'NETWORK_ERROR'),
+      )
+    }
+
     if (!error.response) {
+      markOffline()
       return Promise.reject(
         new ApiError('Network error. Check your connection and try again.', undefined, 'NETWORK_ERROR'),
       )

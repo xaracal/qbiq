@@ -98,4 +98,16 @@ describe('useCartStore', () => {
     expect(store.items).toEqual([])
     expect(store.total).toBe(0)
   })
+
+  it('rolls back optimistic update when API call fails', async () => {
+    vi.mocked(cartApi.updateCartItemQuantity).mockRejectedValue(new Error('Network error'))
+    const store = useCartStore()
+    store.applyCart(sampleCart)
+
+    await expect(store.updateQuantity('prod-1', 5)).rejects.toThrow('Network error')
+
+    expect(store.items).toEqual(sampleCart.items)
+    expect(store.total).toBe(sampleCart.total)
+    expect(store.error).toBe('Network error')
+  })
 })

@@ -53,7 +53,12 @@ async function handleAddToCart() {
 
   addingToCart.value = true
   try {
-    await cartStore.addItem(product.value.id)
+    await cartStore.addItem(product.value.id, 1, {
+      productId: product.value.id,
+      name: product.value.name,
+      price: product.value.price,
+      thumbnailUrl: product.value.thumbnailUrl,
+    })
     toast.success('Added to cart', {
       description: `${product.value.name} was added to your cart.`,
     })
