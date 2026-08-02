@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379"
     cache_ttl_seconds: int = 300
     cart_session_ttl_seconds: int = 86400
-    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:80"]
+    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:80", "http://localhost"]
 
 
 settings = Settings()
