@@ -10,8 +10,10 @@ from redis.asyncio import Redis
 from app.core.cache import CacheService
 from app.core.config import settings
 from app.models.documents.product import Product
+from app.repositories.cart_repository import CartRepository
 from app.repositories.product_repository import ProductRepository
 from app.seed.products import seed_products_if_empty
+from app.services.cart_service import CartService
 from app.services.product_service import ProductService
 
 logger = logging.getLogger(__name__)
@@ -37,12 +39,18 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         redis_client = None
 
     cache = CacheService(redis=redis_client, ttl_seconds=settings.cache_ttl_seconds)
-    repository = ProductRepository()
-    product_service = ProductService(repository=repository, cache=cache)
+    product_repository = ProductRepository()
+    product_service = ProductService(repository=product_repository, cache=cache)
+    cart_repository = CartRepository(redis=redis_client, ttl_seconds=settings.cart_session_ttl_seconds)
+    cart_service = CartService(
+        cart_repository=cart_repository,
+        product_repository=product_repository,
+    )
 
     app.state.mongo_client = mongo_client
     app.state.redis_client = redis_client
     app.state.product_service = product_service
+    app.state.cart_service = cart_service
 
     yield
 

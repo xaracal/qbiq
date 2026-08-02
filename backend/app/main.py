@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api.routes.cart import router as cart_router
 from app.api.routes.products import router as products_router
 from app.core.config import settings
 from app.db.lifespan import lifespan
@@ -16,6 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(products_router)
+app.include_router(cart_router)
 
 
 @app.get("/health")
