@@ -95,23 +95,49 @@ App: http://localhost:5173
 
 ## GitHub Pages (frontend hosting)
 
-The frontend can be deployed to **GitHub Pages** as a static SPA. The backend still runs separately (Docker Compose locally, or any HTTPS host).
+The frontend can be deployed to **GitHub Pages** as a static SPA. When the backend is unreachable, the app automatically switches to **demo mode** (bundled product catalog + localStorage cart).
 
 ### One-time GitHub setup
 
-1. In the repo on GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a branch**
-2. Branch: `gh-pages` / root (created automatically by the deploy script below)
+1. Open **Settings → Pages** in the repo on GitHub
+2. **Source:** Deploy from a branch
+3. **Branch:** `gh-pages` / **/(root)** — not `main` (serving `main` shows the README instead of the app)
+4. Save and wait 1–2 minutes
 
-### Configure API URL
+### Default behavior (demo mode)
+
+The Pages build ([`frontend/.env.pages`](frontend/.env.pages)) sets `VITE_DEMO_FALLBACK=true`. On load, the app probes `/health`; if the API is unreachable, you see a **Demo mode** banner and can browse products, use the cart, and complete mock checkout — all client-side.
+
+Live site: **https://xaracal.github.io/qbiq/**
+
+### Optional: connect a live HTTPS API
 
 Edit `frontend/.env.pages` before deploying:
 
 | Variable | Purpose |
 |----------|---------|
 | `VITE_BASE_PATH` | `/qbiq/` for `https://xaracal.github.io/qbiq/` |
-| `VITE_API_BASE_URL` | Full URL to your backend API (must be **HTTPS** when the site is served over HTTPS) |
+| `VITE_API_BASE_URL` | Full URL to your backend API (must be **HTTPS** on Pages) |
+| `VITE_DEMO_FALLBACK` | `true` = fall back to demo data when API fails; `false` = errors only |
 
-For local Docker backend exposed on port 8000, use a tunnel (e.g. [ngrok](https://ngrok.com/)) and set `VITE_API_BASE_URL` to the tunnel URL + `/api`. Add that origin to backend `CORS_ORIGINS`.
+**Example with ngrok + local Docker backend:**
+
+```bash
+# Terminal 1: full stack
+docker compose up --build
+
+# Terminal 2: expose backend (port 8000) over HTTPS
+ngrok http 8000
+```
+
+Set in `frontend/.env.pages`:
+
+```env
+VITE_API_BASE_URL=https://YOUR-NGROK-ID.ngrok-free.app/api
+VITE_DEMO_FALLBACK=true
+```
+
+Add the ngrok origin to `CORS_ORIGINS` in [`docker-compose.yml`](docker-compose.yml), then rebuild and redeploy the frontend.
 
 ### Deploy manually (no CI/CD)
 
@@ -123,9 +149,7 @@ npm run deploy:pages
 
 This builds with `pages` mode, adds `404.html` + `.nojekyll` for SPA routing, and pushes `dist/` to the `gh-pages` branch.
 
-Live site: **https://xaracal.github.io/qbiq/**
-
-> **Tip:** For demos, Docker Compose at http://localhost is the simplest full-stack experience. GitHub Pages showcases the hosted frontend; pair it with a reachable API URL for live data.
+> **Tip:** Docker Compose at http://localhost is the simplest full-stack demo. GitHub Pages with default settings works standalone in demo mode without any backend.
 
 ## Network resilience
 
@@ -133,7 +157,8 @@ The frontend handles unreliable connections:
 
 | Feature | Description |
 |---------|-------------|
-| Offline banner | Shown when the browser or API is unreachable |
+| Browser offline banner | Shown only when `navigator.onLine` is false |
+| Demo mode banner | Shown when the API is unreachable but demo fallback is enabled |
 | Reconnect banner | Confirms when connectivity returns and data refreshes |
 | GET retries | Product reads retry up to 2 times with exponential backoff |
 | Mutation retries | Cart/checkout requests retry once on network failure |
@@ -208,6 +233,7 @@ Interactive docs: http://localhost/docs (via gateway) or http://localhost:8000/d
 |----------|---------|-------------|
 | `VITE_API_BASE_URL` | `http://localhost:8000/api` | Backend API base URL |
 | `VITE_BASE_PATH` | `/` (dev) or `/qbiq/` (Pages) | Vite public base path |
+| `VITE_DEMO_FALLBACK` | unset (dev) or `true` (Pages) | Use bundled demo data when API is unreachable |
 
 ## Project structure
 

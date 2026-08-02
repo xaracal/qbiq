@@ -17,6 +17,12 @@ vi.mock('@/stores/network', () => ({
   }),
 }))
 
+vi.mock('@/stores/demo', () => ({
+  useDemoStore: () => ({
+    probeLiveApi: vi.fn().mockResolvedValue(true),
+  }),
+}))
+
 vi.mock('@/components/AppHeader.vue', () => ({
   default: { template: '<header data-testid="app-header" />' },
 }))

@@ -19,8 +19,10 @@ function markOnline() {
   useNetworkStore().setOffline(false)
 }
 
-function markOffline() {
-  useNetworkStore().setOffline(true)
+function markOfflineIfBrowserOffline() {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    useNetworkStore().setOffline(true)
+  }
 }
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -35,14 +37,14 @@ apiClient.interceptors.response.use(
   },
   (error: AxiosError<{ detail?: string }>) => {
     if (error.code === 'ECONNABORTED') {
-      markOffline()
+      markOfflineIfBrowserOffline()
       return Promise.reject(
         new ApiError('Request timed out. Please try again.', undefined, 'NETWORK_ERROR'),
       )
     }
 
     if (!error.response) {
-      markOffline()
+      markOfflineIfBrowserOffline()
       return Promise.reject(
         new ApiError('Network error. Check your connection and try again.', undefined, 'NETWORK_ERROR'),
       )
@@ -74,4 +76,8 @@ export async function withGetRetry<T>(request: () => Promise<T>, retries = 2): P
 
 export async function withMutationRetry<T>(request: () => Promise<T>, retries = 1): Promise<T> {
   return withExponentialRetry(request, retries)
+}
+
+export function isNetworkError(error: unknown): boolean {
+  return error instanceof ApiError && error.code === 'NETWORK_ERROR'
 }

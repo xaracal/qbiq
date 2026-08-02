@@ -5,21 +5,25 @@ import { RouterView } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import OfflineBanner from '@/components/OfflineBanner.vue'
 import { useCartStore } from '@/stores/cart'
+import { useDemoStore } from '@/stores/demo'
 import { useNetworkStore } from '@/stores/network'
 
 const cartStore = useCartStore()
+const demoStore = useDemoStore()
 const networkStore = useNetworkStore()
 
 let unregisterReconnect: (() => void) | undefined
 
-onMounted(() => {
+onMounted(async () => {
   networkStore.initListeners()
-  void cartStore.fetchCart().catch(() => {
-    // Badge stays empty when backend is unavailable during development.
-  })
+  await demoStore.probeLiveApi()
+  void cartStore.fetchCart().catch(() => undefined)
 
-  unregisterReconnect = networkStore.onReconnect(() => {
-    void cartStore.fetchCart().catch(() => undefined)
+  unregisterReconnect = networkStore.onReconnect(async () => {
+    const isLive = await demoStore.probeLiveApi()
+    if (isLive) {
+      void cartStore.fetchCart().catch(() => undefined)
+    }
   })
 })
 
