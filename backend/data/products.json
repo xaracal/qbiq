@@ -1,0 +1,261 @@
+[
+  {
+    "id": "ebook-python-mastery",
+    "name": "Python Mastery Handbook",
+    "price": 29.99,
+    "shortDescription": "Advanced Python patterns for production systems.",
+    "longDescription": "A comprehensive guide covering async programming, type hints, packaging, and performance tuning. Includes real-world examples from distributed systems and API design.",
+    "category": "ebook",
+    "thumbnailUrl": "https://picsum.photos/seed/python-mastery/640/360",
+    "reviews": [
+      {
+        "author": "Alex Chen",
+        "rating": 5,
+        "comment": "Clear explanations and practical examples throughout.",
+        "date": "2025-11-12T10:00:00Z"
+      },
+      {
+        "author": "Maria Lopez",
+        "rating": 4,
+        "comment": "Great for intermediate developers leveling up.",
+        "date": "2025-12-01T14:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": "ebook-cloud-native",
+    "name": "Cloud Native Architecture",
+    "price": 34.99,
+    "shortDescription": "Design resilient microservices on Kubernetes.",
+    "longDescription": "Learn service mesh, observability, and deployment strategies for cloud-native applications. Covers Docker, Kubernetes, and CI/CD pipelines end to end.",
+    "category": "ebook",
+    "thumbnailUrl": "https://picsum.photos/seed/cloud-native/640/360",
+    "reviews": [
+      {
+        "author": "James Wright",
+        "rating": 5,
+        "comment": "Exactly what I needed for our platform migration.",
+        "date": "2025-10-20T09:15:00Z"
+      }
+    ]
+  },
+  {
+    "id": "ebook-data-viz",
+    "name": "Data Visualization Essentials",
+    "price": 24.99,
+    "shortDescription": "Tell compelling stories with charts and dashboards.",
+    "longDescription": "From choosing the right chart type to building interactive dashboards, this ebook covers design principles and tooling for effective data communication.",
+    "category": "ebook",
+    "thumbnailUrl": "https://picsum.photos/seed/data-viz/640/360",
+    "reviews": []
+  },
+  {
+    "id": "software-taskflow-pro",
+    "name": "TaskFlow Pro",
+    "price": 49.99,
+    "shortDescription": "Project management for engineering teams.",
+    "longDescription": "TaskFlow Pro streamlines sprints, backlog grooming, and release planning. Integrates with Git providers and supports custom workflows for agile teams.",
+    "category": "software",
+    "thumbnailUrl": "https://picsum.photos/seed/taskflow/640/360",
+    "reviews": [
+      {
+        "author": "Priya Sharma",
+        "rating": 4,
+        "comment": "Solid alternative to heavier PM tools.",
+        "date": "2025-09-05T16:45:00Z"
+      },
+      {
+        "author": "Tom Baker",
+        "rating": 5,
+        "comment": "Our team adopted it within a week.",
+        "date": "2025-11-28T11:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "software-securevault",
+    "name": "SecureVault Manager",
+    "price": 59.99,
+    "shortDescription": "Enterprise secrets and credential management.",
+    "longDescription": "SecureVault Manager provides encrypted storage, rotation policies, and audit logs for API keys, certificates, and environment secrets across your infrastructure.",
+    "category": "software",
+    "thumbnailUrl": "https://picsum.photos/seed/securevault/640/360",
+    "reviews": [
+      {
+        "author": "Elena Rossi",
+        "rating": 5,
+        "comment": "Audit trail alone is worth the price.",
+        "date": "2025-08-18T08:20:00Z"
+      }
+    ]
+  },
+  {
+    "id": "software-pixelforge",
+    "name": "PixelForge Studio",
+    "price": 79.99,
+    "shortDescription": "Creative suite for digital asset production.",
+    "longDescription": "PixelForge Studio combines vector editing, batch export, and brand kit management for designers and marketing teams building consistent visual assets.",
+    "category": "software",
+    "thumbnailUrl": "https://picsum.photos/seed/pixelforge/640/360",
+    "reviews": [
+      {
+        "author": "Chris Nguyen",
+        "rating": 4,
+        "comment": "Intuitive UI with powerful export options.",
+        "date": "2025-12-15T13:10:00Z"
+      }
+    ]
+  },
+  {
+    "id": "course-fastapi-deep-dive",
+    "name": "FastAPI Deep Dive",
+    "price": 89.99,
+    "shortDescription": "Build production APIs with FastAPI and Pydantic.",
+    "longDescription": "Twelve modules covering routing, dependency injection, authentication, testing, and deployment. Includes hands-on labs and a capstone e-commerce API project.",
+    "category": "course",
+    "thumbnailUrl": "https://picsum.photos/seed/fastapi-course/640/360",
+    "reviews": [
+      {
+        "author": "Samira Khan",
+        "rating": 5,
+        "comment": "Best FastAPI course I have taken.",
+        "date": "2025-07-22T19:00:00Z"
+      },
+      {
+        "author": "Daniel Ortiz",
+        "rating": 5,
+        "comment": "Capstone project was very realistic.",
+        "date": "2025-10-30T07:55:00Z"
+      }
+    ]
+  },
+  {
+    "id": "course-vue3-complete",
+    "name": "Vue 3 Complete Path",
+    "price": 74.99,
+    "shortDescription": "Master Composition API, Pinia, and Vue Router.",
+    "longDescription": "From component fundamentals to state management and testing, this course builds a full storefront application step by step with TypeScript and Vite.",
+    "category": "course",
+    "thumbnailUrl": "https://picsum.photos/seed/vue3-course/640/360",
+    "reviews": [
+      {
+        "author": "Linda Park",
+        "rating": 4,
+        "comment": "Pinia section was especially helpful.",
+        "date": "2025-11-03T12:40:00Z"
+      }
+    ]
+  },
+  {
+    "id": "course-ml-fundamentals",
+    "name": "Machine Learning Fundamentals",
+    "price": 99.99,
+    "shortDescription": "Practical ML from data prep to model deployment.",
+    "longDescription": "Covers supervised learning, feature engineering, model evaluation, and serving models with REST APIs. Jupyter notebooks and quizzes included.",
+    "category": "course",
+    "thumbnailUrl": "https://picsum.photos/seed/ml-course/640/360",
+    "reviews": [
+      {
+        "author": "Robert Kim",
+        "rating": 4,
+        "comment": "Good balance of theory and practice.",
+        "date": "2025-06-14T15:25:00Z"
+      }
+    ]
+  },
+  {
+    "id": "ebook-typescript-patterns",
+    "name": "TypeScript Design Patterns",
+    "price": 27.99,
+    "shortDescription": "Idiomatic TypeScript for scalable frontends.",
+    "longDescription": "Explore generics, utility types, and architectural patterns for large Vue and React codebases. Includes refactoring case studies from legacy JavaScript.",
+    "category": "ebook",
+    "thumbnailUrl": "https://picsum.photos/seed/ts-patterns/640/360",
+    "reviews": [
+      {
+        "author": "Nina Patel",
+        "rating": 5,
+        "comment": "Finally understood advanced generics.",
+        "date": "2025-12-08T17:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": "software-logstream",
+    "name": "LogStream Analytics",
+    "price": 69.99,
+    "shortDescription": "Centralized logging with real-time search.",
+    "longDescription": "LogStream Analytics aggregates application logs, supports structured queries, alerting rules, and retention policies for DevOps and SRE teams.",
+    "category": "software",
+    "thumbnailUrl": "https://picsum.photos/seed/logstream/640/360",
+    "reviews": []
+  },
+  {
+    "id": "course-docker-kubernetes",
+    "name": "Docker & Kubernetes Bootcamp",
+    "price": 84.99,
+    "shortDescription": "Containerize apps and orchestrate at scale.",
+    "longDescription": "Hands-on labs for building images, composing services, deploying to Kubernetes, and managing ingress, secrets, and horizontal pod autoscaling.",
+    "category": "course",
+    "thumbnailUrl": "https://picsum.photos/seed/k8s-course/640/360",
+    "reviews": [
+      {
+        "author": "Hannah Lee",
+        "rating": 5,
+        "comment": "Labs were well structured and easy to follow.",
+        "date": "2025-09-27T10:05:00Z"
+      }
+    ]
+  },
+  {
+    "id": "ebook-api-security",
+    "name": "API Security Playbook",
+    "price": 31.99,
+    "shortDescription": "Protect REST and GraphQL APIs from common threats.",
+    "longDescription": "Covers authentication flows, rate limiting, input validation, OWASP API Top 10, and security headers with checklists for production readiness.",
+    "category": "ebook",
+    "thumbnailUrl": "https://picsum.photos/seed/api-security/640/360",
+    "reviews": [
+      {
+        "author": "Victor Mensah",
+        "rating": 4,
+        "comment": "Practical checklists I use on every review.",
+        "date": "2025-10-11T21:15:00Z"
+      }
+    ]
+  },
+  {
+    "id": "software-codepulse",
+    "name": "CodePulse CI",
+    "price": 44.99,
+    "shortDescription": "Lightweight CI/CD for monorepos.",
+    "longDescription": "CodePulse CI offers parallel test runners, cache-aware builds, and deployment previews integrated with GitHub and GitLab workflows.",
+    "category": "software",
+    "thumbnailUrl": "https://picsum.photos/seed/codepulse/640/360",
+    "reviews": [
+      {
+        "author": "Olivia Grant",
+        "rating": 4,
+        "comment": "Setup took minutes, not hours.",
+        "date": "2025-11-19T09:50:00Z"
+      }
+    ]
+  },
+  {
+    "id": "course-redis-caching",
+    "name": "Redis Caching Strategies",
+    "price": 54.99,
+    "shortDescription": "Speed up APIs with effective cache design.",
+    "longDescription": "Learn cache invalidation patterns, TTL strategies, session storage, and pub/sub for real-time features. Includes Python and Node examples.",
+    "category": "course",
+    "thumbnailUrl": "https://picsum.photos/seed/redis-course/640/360",
+    "reviews": [
+      {
+        "author": "Marcus Webb",
+        "rating": 5,
+        "comment": "Clear guidance on when not to cache.",
+        "date": "2025-08-02T18:00:00Z"
+      }
+    ]
+  }
+]
