@@ -26,7 +26,6 @@ dist/
 .terraform/
 *.tfstate
 *.tfstate.*
-.terraform.lock.hcl
 
 # Docker
 mongo_data/

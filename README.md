@@ -192,12 +192,104 @@ Bump versions intentionally via commit — never rely on floating tags in produc
 
 ```
 qbiq/
-├── backend/           # FastAPI + Beanie + Redis
-├── frontend/          # Vue 3 + Vite + Pinia
-├── docker-compose.yml
-├── docker-compose.dev.yml
+├── backend/                 # FastAPI + Beanie + Redis
+├── frontend/                # Vue 3 + Vite + Pinia
+├── terraform/               # GCE VM + firewall + IAM
+├── deploy/                  # Production nginx gateway + deploy scripts
+├── .github/workflows/       # CI and deploy pipelines
+├── docker-compose.yml       # Local full stack
+├── docker-compose.dev.yml   # Hot-reload override
+├── docker-compose.prod.yml  # Production (VM / GAR images)
 └── README.md
 ```
+
+## GCP deployment
+
+Production runs on a **GCE VM** provisioned by Terraform. GitHub Actions builds images, pushes to **Artifact Registry**, and deploys via SSH + Docker Compose.
+
+```mermaid
+flowchart LR
+  GHA[GitHub Actions] --> GAR[Artifact Registry]
+  GHA --> TF[Terraform apply]
+  TF --> VM[GCE VM]
+  GAR -->|docker pull| VM
+  VM --> Gateway[nginx :80]
+  Gateway --> FE[frontend]
+  Gateway -->|/api| BE[backend]
+  BE --> Mongo[(mongo)]
+  BE --> Redis[(redis)]
+```
+
+### One-time GCP setup
+
+1. Create a GCP project with billing enabled.
+2. Enable APIs: **Compute Engine**, **Artifact Registry**, **IAM**.
+3. Create an Artifact Registry repository:
+   ```bash
+   gcloud artifacts repositories create qbiq \
+     --repository-format=docker \
+     --location=us-central1
+   ```
+4. Create a GCS bucket for Terraform state:
+   ```bash
+   gsutil mb -l us-central1 gs://YOUR_PROJECT_ID-terraform-state
+   ```
+5. Create a deployer service account with roles:
+   - `roles/compute.admin`
+   - `roles/iam.serviceAccountUser`
+   - `roles/artifactregistry.admin`
+   - `roles/storage.admin` (Terraform state bucket)
+6. Download a JSON key for the service account (or configure Workload Identity Federation).
+
+### Terraform (local)
+
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars   # edit project_id
+cp backend.hcl.example backend.hcl             # edit bucket name
+
+terraform init -backend-config=backend.hcl
+terraform plan
+terraform apply
+```
+
+Outputs include `public_ip`, `app_url`, and `ssh_command`.
+
+### GitHub secrets
+
+| Secret | Description |
+|--------|-------------|
+| `GCP_PROJECT_ID` | GCP project ID |
+| `GCP_SA_KEY` | Service account JSON key |
+| `TF_STATE_BUCKET` | GCS bucket for Terraform state |
+
+### CI/CD workflows
+
+| Workflow | Trigger | Actions |
+|----------|---------|---------|
+| `ci.yml` | Pull requests + push to `main` | pytest, vitest, terraform validate, Docker build smoke |
+| `deploy.yml` | Push to `main` | terraform apply, build/push images, SSH deploy to VM |
+
+### Production compose
+
+On the VM, `/opt/qbiq/docker-compose.prod.yml` runs:
+
+- **gateway** — nginx on port 80 (`/` → frontend, `/api` → backend)
+- **frontend** — static SPA (built with `VITE_API_BASE_URL=/api`)
+- **backend**, **mongo**, **redis** — internal network only (no host ports for DB)
+
+See `deploy/.env.prod.example` for required environment variables.
+
+### Rollback
+
+Redeploy a previous commit SHA:
+
+```bash
+# On VM, set IMAGE_TAG to a previous git SHA in /opt/qbiq/.env.prod
+sudo REGISTRY=... IMAGE_TAG=<previous-sha> /opt/qbiq/remote-deploy.sh
+```
+
+Or re-run the deploy workflow on an earlier commit via **workflow_dispatch**.
 
 ## Implementation phases
 
@@ -210,7 +302,7 @@ qbiq/
 | 4 | Done | Product list, detail, cart pages + Sky UI |
 | 5 | Done | Docker Compose, tests, documentation |
 | 6 | Done | Network retry / offline resilience |
-| 7 | Pending | Terraform + GCP + GitHub Actions deploy |
+| 7 | Done | Terraform + GCP + GitHub Actions deploy |
 
 ## License
 
