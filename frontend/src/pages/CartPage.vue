@@ -60,7 +60,12 @@ async function handleCheckout() {
   checkoutLoading.value = true
   try {
     const order = await cartStore.checkout()
-    await router.push({ name: 'checkout-success', params: { orderId: order.id } })
+    await router.push({
+      name: 'checkout-success',
+      params: { orderId: order.id },
+      state: { orderJson: JSON.stringify(order) },
+    })
+    cartStore.applyCart({ items: [], total: 0 })
   } catch (err) {
     toast.error('Checkout failed', {
       description: getErrorMessage(err),
@@ -107,7 +112,7 @@ onMounted(() => {
     </div>
 
     <EmptyState
-      v-else-if="!loading && items.length === 0 && !error"
+      v-else-if="!loading && items.length === 0 && !error && !checkoutLoading"
       :icon="ShoppingBagIcon"
       title="Your cart is empty"
       description="Browse our catalog and add something you like."

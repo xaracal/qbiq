@@ -46,7 +46,9 @@ const router = createRouter({
 
 router.afterEach((to) => {
   setPageTitle(typeof to.meta.title === 'string' ? to.meta.title : undefined)
-  focusMainContent()
+  if (to.name !== 'checkout-success' || !(history.state as { orderJson?: string })?.orderJson) {
+    focusMainContent()
+  }
 })
 
 export default router

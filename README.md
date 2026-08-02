@@ -101,7 +101,7 @@ The frontend can be deployed to **GitHub Pages** as a static SPA. When the backe
 
 1. Open **Settings → Pages** in the repo on GitHub
 2. **Source:** Deploy from a branch
-3. **Branch:** `gh-pages` / **/(root)** — not `main` (serving `main` shows the README instead of the app)
+3. **Branch:** `main` / **`/docs`**
 4. Save and wait 1–2 minutes
 
 ### Default behavior (demo mode)
@@ -139,15 +139,18 @@ VITE_DEMO_FALLBACK=true
 
 Add the ngrok origin to `CORS_ORIGINS` in [`docker-compose.yml`](docker-compose.yml), then rebuild and redeploy the frontend.
 
-### Deploy manually (no CI/CD)
+### Deploy to GitHub Pages (single `main` branch)
 
 ```bash
 cd frontend
 npm ci
 npm run deploy:pages
+git add docs/
+git commit -m "chore: update GitHub Pages build"
+git push origin main
 ```
 
-This builds with `pages` mode, adds `404.html` + `.nojekyll` for SPA routing, and pushes `dist/` to the `gh-pages` branch.
+This builds with `pages` mode, adds `404.html` + `.nojekyll`, and copies the output to [`docs/`](docs/) on `main`. GitHub Pages serves from that folder — no separate `gh-pages` branch.
 
 > **Tip:** Docker Compose at http://localhost is the simplest full-stack demo. GitHub Pages with default settings works standalone in demo mode without any backend.
 
@@ -240,6 +243,7 @@ Interactive docs: http://localhost/docs (via gateway) or http://localhost:8000/d
 ```
 qbiq-dig-store/
 ├── backend/                 # FastAPI + Beanie + Redis
+├── docs/                    # Built frontend for GitHub Pages (generated)
 ├── frontend/                # Vue 3 + Vite + Pinia
 ├── deploy/                  # nginx gateway configs for Docker Compose
 ├── docker-compose.yml       # Full stack (mongo, redis, backend, frontend, gateway)

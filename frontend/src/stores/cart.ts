@@ -177,15 +177,11 @@ export const useCartStore = defineStore('cart', {
     },
 
     async checkout(): Promise<Order> {
-      const previous = this.snapshot()
-      this.applyCart({ items: [], total: 0 })
       this.error = null
 
       try {
-        const order = await checkoutApi.checkout()
-        return order
+        return await checkoutApi.checkout()
       } catch (error) {
-        this.restoreSnapshot(previous)
         this.error = getErrorMessage(error)
         throw error
       }

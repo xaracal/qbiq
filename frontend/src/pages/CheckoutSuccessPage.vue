@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { CheckCircle2Icon } from '@lucide/vue'
 import Button from 'primevue/button'
@@ -13,6 +13,10 @@ import { ApiError, getErrorMessage } from '@/api/errors'
 import { formatDate, formatPrice } from '@/lib/format'
 import type { Order } from '@/types'
 
+interface CheckoutHistoryState {
+  orderJson?: string
+}
+
 const route = useRoute()
 
 const order = ref<Order | null>(null)
@@ -22,33 +26,62 @@ const notFound = ref(false)
 
 const orderId = computed(() => String(route.params.orderId))
 
+function readOrderFromHistory(): Order | null {
+  const state = history.state as CheckoutHistoryState | null
+  if (!state?.orderJson) {
+    return null
+  }
+
+  try {
+    const parsed = JSON.parse(state.orderJson) as Order
+    return parsed.id === orderId.value ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+function applyOrder(value: Order | null) {
+  order.value = value
+  loading.value = value === null
+}
+
 async function loadOrder() {
+  const cachedOrder = readOrderFromHistory()
+  if (cachedOrder) {
+    applyOrder(cachedOrder)
+    return
+  }
+
   loading.value = true
   error.value = null
   notFound.value = false
   order.value = null
 
   try {
-    order.value = await fetchOrder(orderId.value)
+    applyOrder(await fetchOrder(orderId.value))
   } catch (err) {
     if (err instanceof ApiError && err.code === 'NOT_FOUND') {
       notFound.value = true
+      loading.value = false
     } else {
       error.value = getErrorMessage(err)
+      loading.value = false
     }
-  } finally {
-    loading.value = false
   }
 }
 
 onMounted(() => {
   void loadOrder()
 })
+
+watch(orderId, () => {
+  void loadOrder()
+})
 </script>
 
 <template>
   <section class="space-y-6">
-    <div v-if="loading" class="space-y-4">
+    <div v-if="loading" class="space-y-4" aria-busy="true" aria-label="Loading order">
       <Skeleton width="16rem" height="2rem" />
       <Skeleton width="24rem" height="1rem" />
       <Card v-for="index in 2" :key="index">

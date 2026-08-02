@@ -104,7 +104,7 @@ describe('useCartStore', () => {
     expect(store.total).toBe(0)
   })
 
-  it('checkout clears cart and returns order', async () => {
+  it('checkout returns order without clearing cart until caller syncs', async () => {
     const order: Order = {
       id: 'order-1',
       sessionId: 'session-1',
@@ -121,11 +121,14 @@ describe('useCartStore', () => {
 
     expect(checkoutApi.checkout).toHaveBeenCalled()
     expect(result).toEqual(order)
+    expect(store.items).toEqual(sampleCart.items)
+    expect(store.total).toBe(39.98)
+
+    store.applyCart({ items: [], total: 0 })
     expect(store.items).toEqual([])
-    expect(store.total).toBe(0)
   })
 
-  it('rolls back optimistic update when checkout fails', async () => {
+  it('keeps cart unchanged when checkout fails', async () => {
     vi.mocked(checkoutApi.checkout).mockRejectedValue(new Error('Network error'))
     const store = useCartStore()
     store.applyCart(sampleCart)
