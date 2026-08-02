@@ -1,10 +1,17 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useCartStore } from '@/stores/cart'
 
 const cartStore = useCartStore()
 const { itemCount } = storeToRefs(cartStore)
+
+onMounted(() => {
+  void cartStore.fetchCart().catch(() => {
+    // Badge stays empty when backend is unavailable during development.
+  })
+})
 </script>
 
 <template>
