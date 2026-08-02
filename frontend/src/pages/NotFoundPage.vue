@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-
-import { Button } from '@/components/ui/button'
+import Button from 'primevue/button'
 </script>
 
 <template>
@@ -10,8 +9,8 @@ import { Button } from '@/components/ui/button'
     <p class="max-w-md text-muted-foreground">
       The page you are looking for does not exist.
     </p>
-    <Button as-child class="h-10">
-      <RouterLink to="/products">Back to products</RouterLink>
-    </Button>
+    <RouterLink to="/products">
+      <Button label="Back to products" />
+    </RouterLink>
   </div>
 </template>

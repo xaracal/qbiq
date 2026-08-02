@@ -1,14 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import type { ProductListQuery } from '@/types'
 
 const emit = defineEmits<{
@@ -60,17 +54,24 @@ watch([category, sort], emitChange)
 </script>
 
 <template>
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <form
+    role="search"
+    aria-label="Filter and sort products"
+    class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+    @submit.prevent
+  >
     <div class="sm:col-span-2 lg:col-span-2">
       <label for="product-search" class="mb-2 block text-sm font-medium text-muted-foreground">
         Search
       </label>
-      <Input
+      <InputText
         id="product-search"
         v-model="name"
         type="search"
         placeholder="Search by product name..."
-        class="h-10"
+        aria-label="Search products by name"
+        autocomplete="off"
+        class="w-full"
       />
     </div>
 
@@ -78,32 +79,32 @@ watch([category, sort], emitChange)
       <label for="product-category" class="mb-2 block text-sm font-medium text-muted-foreground">
         Category
       </label>
-      <Select v-model="category">
-        <SelectTrigger id="product-category" class="h-10 w-full">
-          <SelectValue placeholder="Category" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem v-for="option in categories" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <Select
+        v-model="category"
+        input-id="product-category"
+        aria-labelledby="product-category"
+        :options="categories"
+        option-label="label"
+        option-value="value"
+        placeholder="Category"
+        class="w-full"
+      />
     </div>
 
     <div>
       <label for="product-sort" class="mb-2 block text-sm font-medium text-muted-foreground">
         Sort by
       </label>
-      <Select v-model="sort">
-        <SelectTrigger id="product-sort" class="h-10 w-full">
-          <SelectValue placeholder="Sort by" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem v-for="option in sortOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <Select
+        v-model="sort"
+        input-id="product-sort"
+        aria-labelledby="product-sort"
+        :options="sortOptions"
+        option-label="label"
+        option-value="value"
+        placeholder="Sort by"
+        class="w-full"
+      />
     </div>
-  </div>
+  </form>
 </template>

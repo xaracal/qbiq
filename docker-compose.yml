@@ -1,3 +1,5 @@
+name: qbiq-dig-store
+
 services:
   mongo:
     image: mongo:8.0.4-noble
@@ -25,12 +27,13 @@ services:
   backend:
     build:
       context: ./backend
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
       MONGODB_URL: mongodb://mongo:27017
       MONGODB_DB_NAME: qbiq_dig_store
       REDIS_URL: redis://redis:6379
+      CORS_ORIGINS: '["http://localhost","http://localhost:80","http://localhost:5173"]'
     depends_on:
       mongo:
         condition: service_healthy
@@ -51,10 +54,22 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_BASE_URL: http://localhost:8000
+        VITE_API_BASE_URL: /api
+    expose:
+      - "80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  gateway:
+    image: nginx:1.28.0-alpine
     ports:
       - "80:80"
+    volumes:
+      - ./deploy/nginx-gateway.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
+      frontend:
+        condition: service_started
       backend:
         condition: service_healthy
 

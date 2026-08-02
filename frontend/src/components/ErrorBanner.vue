@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { AlertCircleIcon } from '@lucide/vue'
-
-import { Button } from '@/components/ui/button'
+import Button from 'primevue/button'
 
 defineProps<{
   message: string
@@ -21,8 +20,13 @@ const emit = defineEmits<{
       <AlertCircleIcon class="mt-0.5 size-5 shrink-0 text-destructive" aria-hidden="true" />
       <p class="text-sm text-foreground">{{ message }}</p>
     </div>
-    <Button variant="outline" class="h-10 shrink-0" @click="emit('retry')">
-      Try again
-    </Button>
+    <Button
+      label="Try again"
+      severity="secondary"
+      outlined
+      class="shrink-0"
+      aria-label="Try loading again"
+      @click="emit('retry')"
+    />
   </div>
 </template>

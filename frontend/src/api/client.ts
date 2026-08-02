@@ -4,7 +4,7 @@ import { ApiError } from '@/api/errors'
 import { getCartSessionId } from '@/api/session'
 import { useNetworkStore } from '@/stores/network'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
+const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api'
 
 export const apiClient = axios.create({
   baseURL,

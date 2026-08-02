@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import { RouterLink } from 'vue-router'
-
-import { Button } from '@/components/ui/button'
+import Button from 'primevue/button'
 
 defineProps<{
   title: string
@@ -20,8 +19,8 @@ defineProps<{
       <h2 class="text-xl font-semibold tracking-tight">{{ title }}</h2>
       <p class="max-w-md text-sm text-muted-foreground">{{ description }}</p>
     </div>
-    <Button v-if="actionLabel && actionTo" as-child class="h-10">
-      <RouterLink :to="actionTo">{{ actionLabel }}</RouterLink>
-    </Button>
+    <RouterLink v-if="actionLabel && actionTo" :to="actionTo">
+      <Button :label="actionLabel" />
+    </RouterLink>
   </div>
 </template>

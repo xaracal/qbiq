@@ -12,8 +12,14 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    expose:
+      - "5173"
     ports:
       - "5173:5173"
     command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
     environment:
-      VITE_API_BASE_URL: http://localhost:8000
+      VITE_API_BASE_URL: /api
+
+  gateway:
+    volumes:
+      - ./deploy/nginx-gateway.dev.conf:/etc/nginx/conf.d/default.conf:ro

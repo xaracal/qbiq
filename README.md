@@ -15,7 +15,7 @@ flowchart LR
 - **Products** — stored in MongoDB, auto-seeded from `backend/data/products.json`
 - **Product cache** — Redis TTL cache for list/detail responses
 - **Cart** — Redis session storage keyed by `X-Cart-Session-Id` header
-- **Frontend** — Vue 3 + TypeScript + Pinia + shadcn-vue (Sky theme)
+- **Frontend** — Vue 3 + TypeScript + Pinia + PrimeVue (Aura/Sky theme)
 
 ## Prerequisites
 
@@ -35,10 +35,10 @@ docker compose up --build
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost |
-| Backend API | http://localhost:8000 |
-| API docs (Swagger) | http://localhost:8000/docs |
-| Health check | http://localhost:8000/health |
+| App (via gateway) | http://localhost |
+| Backend API | http://localhost/api |
+| API docs (Swagger) | http://localhost/docs |
+| Health check | http://localhost/health |
 
 Stop and remove containers:
 
@@ -60,7 +60,7 @@ For backend `--reload` and Vite dev server on port 5173:
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
-App: http://localhost:5173
+App: http://localhost (gateway) or http://localhost:5173 (Vite direct)
 
 ## Local development (without Docker)
 
@@ -153,7 +153,7 @@ Interactive docs: http://localhost:8000/docs
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VITE_API_BASE_URL` | `http://localhost:8000` | Backend API base URL |
+| `VITE_API_BASE_URL` | `http://localhost:8000/api` (local dev) or `/api` (Docker/prod) | Backend API base URL |
 
 ## Pinned versions
 
@@ -188,7 +188,7 @@ Bump versions intentionally via commit — never rely on floating tags in produc
 | pinia | 4.0.2 |
 | axios | 1.19.0 |
 | tailwindcss | 4.3.3 |
-| shadcn-vue | 2.8.1 |
+| primevue | 4.3.6 |
 
 ## Project structure
 
@@ -271,6 +271,7 @@ Outputs include `public_ip`, `app_url`, and `ssh_command`.
 |----------|---------|---------|
 | `ci.yml` | Pull requests + push to `main` | pytest, vitest, terraform validate, Docker build smoke |
 | `deploy.yml` | Push to `main` | terraform apply, build/push images, SSH deploy to VM |
+| `clear-volumes.yml` | Manual (`workflow_dispatch`) | Wipe MongoDB volume on prod VM and restart stack |
 
 ### Production compose
 
@@ -301,7 +302,7 @@ Or re-run the deploy workflow on an earlier commit via **workflow_dispatch**.
 | 1 | Done | Products API + MongoDB + Redis cache |
 | 2 | Done | Cart API + Redis sessions |
 | 3 | Done | Frontend types, API client, router, store |
-| 4 | Done | Product list, detail, cart pages + Sky UI |
+| 4 | Done | Product list, detail, cart pages + PrimeVue UI |
 | 5 | Done | Docker Compose, tests, documentation |
 | 6 | Done | Network retry / offline resilience |
 | 7 | Done | Terraform + GCP + GitHub Actions deploy |
