@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { PackageOpenIcon } from '@lucide/vue'
 
 import EmptyState from '@/components/EmptyState.vue'
@@ -9,12 +9,17 @@ import ProductFilters from '@/components/ProductFilters.vue'
 import SkeletonProductGrid from '@/components/SkeletonProductGrid.vue'
 import { fetchProducts } from '@/api/products'
 import { getErrorMessage } from '@/api/errors'
+import { useNetworkStore } from '@/stores/network'
 import type { ProductListQuery, ProductSummary } from '@/types'
 
 const products = ref<ProductSummary[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 const query = ref<ProductListQuery>({})
+
+const networkStore = useNetworkStore()
+
+let unregisterReconnect: (() => void) | undefined
 
 const resultsStatus = computed(() => {
   if (loading.value) {
@@ -46,6 +51,16 @@ async function loadProducts(params: ProductListQuery = query.value) {
 
 onMounted(() => {
   void loadProducts()
+
+  unregisterReconnect = networkStore.onReconnect(() => {
+    if (error.value || products.value.length === 0) {
+      void loadProducts(query.value)
+    }
+  })
+})
+
+onUnmounted(() => {
+  unregisterReconnect?.()
 })
 </script>
 

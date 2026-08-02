@@ -1,6 +1,0 @@
-project_id       = "your-gcp-project-id"
-region           = "us-central1"
-zone             = "us-central1-a"
-instance_name    = "qbiq-dig-store-app"
-machine_type     = "e2-medium"
-allowed_ssh_cidr = "0.0.0.0/0"

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { WifiOffIcon } from '@lucide/vue'
+import { WifiOffIcon, WifiIcon } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 
 import { useNetworkStore } from '@/stores/network'
 
 const networkStore = useNetworkStore()
-const { isOffline } = storeToRefs(networkStore)
+const { isOffline, showReconnected } = storeToRefs(networkStore)
 </script>
 
 <template>
@@ -18,6 +18,18 @@ const { isOffline } = storeToRefs(networkStore)
     <div class="mx-auto flex max-w-7xl items-center justify-center gap-2">
       <WifiOffIcon class="size-4 shrink-0" aria-hidden="true" />
       <span>You appear to be offline. Some actions may fail until your connection is restored.</span>
+    </div>
+  </div>
+
+  <div
+    v-else-if="showReconnected"
+    class="border-b border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-center text-sm text-emerald-900 dark:text-emerald-100"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="mx-auto flex max-w-7xl items-center justify-center gap-2">
+      <WifiIcon class="size-4 shrink-0" aria-hidden="true" />
+      <span>Connection restored. Refreshing data…</span>
     </div>
   </div>
 </template>

@@ -1,2 +1,0 @@
-bucket = "YOUR_PROJECT_ID-terraform-state"
-prefix = "qbiq-dig-store/terraform"

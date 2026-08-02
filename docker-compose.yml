@@ -27,13 +27,15 @@ services:
   backend:
     build:
       context: ./backend
+    ports:
+      - "8000:8000"
     expose:
       - "8000"
     environment:
       MONGODB_URL: mongodb://mongo:27017
       MONGODB_DB_NAME: qbiq_dig_store
       REDIS_URL: redis://redis:6379
-      CORS_ORIGINS: '["http://localhost","http://localhost:80","http://localhost:5173"]'
+      CORS_ORIGINS: '["http://localhost","http://localhost:80","http://localhost:5173","http://localhost:8000","https://xaracal.github.io"]'
     depends_on:
       mongo:
         condition: service_healthy

@@ -2,6 +2,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 
 import { ApiError } from '@/api/errors'
 import { getCartSessionId } from '@/api/session'
+import { withExponentialRetry } from '@/lib/retry'
 import { useNetworkStore } from '@/stores/network'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api'
@@ -67,14 +68,10 @@ apiClient.interceptors.response.use(
   },
 )
 
-export async function withGetRetry<T>(request: () => Promise<T>, retries = 1): Promise<T> {
-  try {
-    return await request()
-  } catch (error) {
-    if (retries > 0 && error instanceof ApiError && error.code === 'NETWORK_ERROR') {
-      await new Promise((resolve) => setTimeout(resolve, 500 * (2 - retries)))
-      return withGetRetry(request, retries - 1)
-    }
-    throw error
-  }
+export async function withGetRetry<T>(request: () => Promise<T>, retries = 2): Promise<T> {
+  return withExponentialRetry(request, retries)
+}
+
+export async function withMutationRetry<T>(request: () => Promise<T>, retries = 1): Promise<T> {
+  return withExponentialRetry(request, retries)
 }

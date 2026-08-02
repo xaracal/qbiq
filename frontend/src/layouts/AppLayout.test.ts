@@ -13,6 +13,7 @@ vi.mock('@/stores/cart', () => ({
 vi.mock('@/stores/network', () => ({
   useNetworkStore: () => ({
     initListeners: vi.fn(),
+    onReconnect: vi.fn(() => () => undefined),
   }),
 }))
 

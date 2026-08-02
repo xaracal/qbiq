@@ -25,7 +25,7 @@ flowchart LR
 | Python | 3.12+ |
 | Docker & Docker Compose | v2+ |
 
-## Quick start (Docker)
+## Quick start (Docker Compose)
 
 Run the full stack with one command:
 
@@ -37,6 +37,7 @@ docker compose up --build
 |---------|-----|
 | App (via gateway) | http://localhost |
 | Backend API | http://localhost/api |
+| Backend API (direct) | http://localhost:8000 |
 | API docs (Swagger) | http://localhost/docs |
 | Health check | http://localhost/health |
 
@@ -92,6 +93,53 @@ npm run dev
 
 App: http://localhost:5173
 
+## GitHub Pages (frontend hosting)
+
+The frontend can be deployed to **GitHub Pages** as a static SPA. The backend still runs separately (Docker Compose locally, or any HTTPS host).
+
+### One-time GitHub setup
+
+1. In the repo on GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a branch**
+2. Branch: `gh-pages` / root (created automatically by the deploy script below)
+
+### Configure API URL
+
+Edit `frontend/.env.pages` before deploying:
+
+| Variable | Purpose |
+|----------|---------|
+| `VITE_BASE_PATH` | `/qbiq/` for `https://xaracal.github.io/qbiq/` |
+| `VITE_API_BASE_URL` | Full URL to your backend API (must be **HTTPS** when the site is served over HTTPS) |
+
+For local Docker backend exposed on port 8000, use a tunnel (e.g. [ngrok](https://ngrok.com/)) and set `VITE_API_BASE_URL` to the tunnel URL + `/api`. Add that origin to backend `CORS_ORIGINS`.
+
+### Deploy manually (no CI/CD)
+
+```bash
+cd frontend
+npm ci
+npm run deploy:pages
+```
+
+This builds with `pages` mode, adds `404.html` + `.nojekyll` for SPA routing, and pushes `dist/` to the `gh-pages` branch.
+
+Live site: **https://xaracal.github.io/qbiq/**
+
+> **Tip:** For demos, Docker Compose at http://localhost is the simplest full-stack experience. GitHub Pages showcases the hosted frontend; pair it with a reachable API URL for live data.
+
+## Network resilience
+
+The frontend handles unreliable connections:
+
+| Feature | Description |
+|---------|-------------|
+| Offline banner | Shown when the browser or API is unreachable |
+| Reconnect banner | Confirms when connectivity returns and data refreshes |
+| GET retries | Product reads retry up to 2 times with exponential backoff |
+| Mutation retries | Cart/checkout requests retry once on network failure |
+| Optimistic rollback | Cart UI reverts if an update fails after local changes |
+| Auto-refresh | Cart and failed product lists reload when connection is restored |
+
 ## Running tests
 
 ### Backend
@@ -134,7 +182,7 @@ All cart and checkout endpoints require the `X-Cart-Session-Id` header (UUID gen
 | `POST` | `/api/checkout` | Mock checkout — persist order, clear cart |
 | `GET` | `/api/orders/{id}` | Get order (session must match) |
 
-Interactive docs: http://localhost:8000/docs
+Interactive docs: http://localhost/docs (via gateway) or http://localhost:8000/docs (direct)
 
 ## Environment variables
 
@@ -149,46 +197,17 @@ Interactive docs: http://localhost:8000/docs
 | `CART_SESSION_TTL_SECONDS` | `86400` | Cart session TTL (24h) |
 | `CORS_ORIGINS` | see `config.py` | JSON list of allowed origins |
 
-### Frontend (`frontend/.env`)
+### Frontend
+
+| File | Use |
+|------|-----|
+| `frontend/.env` | Local dev (`npm run dev`) |
+| `frontend/.env.pages` | GitHub Pages build (`npm run build:pages`) |
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VITE_API_BASE_URL` | `http://localhost:8000/api` (local dev) or `/api` (Docker/prod) | Backend API base URL |
-
-## Pinned versions
-
-Bump versions intentionally via commit — never rely on floating tags in production.
-
-### Docker images
-
-| Service | Image |
-|---------|-------|
-| Backend | `python:3.12.8-slim-bookworm` |
-| Frontend build | `node:24.11.0-bookworm-slim` |
-| Frontend serve | `nginx:1.28.0-alpine` |
-| MongoDB | `mongo:8.0.4-noble` |
-| Redis | `redis:8.0.2-alpine` |
-
-### Key Python packages (`backend/requirements.txt`)
-
-| Package | Version |
-|---------|---------|
-| fastapi | 0.136.1 |
-| pydantic | 2.13.4 |
-| beanie | 2.1.0 |
-| pymongo | 4.12.0 |
-| redis | 5.2.1 |
-
-### Key npm packages (`frontend/package.json`)
-
-| Package | Version |
-|---------|---------|
-| vue | 3.5.40 |
-| vite | 8.2.0 |
-| pinia | 4.0.2 |
-| axios | 1.19.0 |
-| tailwindcss | 4.3.3 |
-| primevue | 4.3.6 |
+| `VITE_API_BASE_URL` | `http://localhost:8000/api` | Backend API base URL |
+| `VITE_BASE_PATH` | `/` (dev) or `/qbiq/` (Pages) | Vite public base path |
 
 ## Project structure
 
@@ -196,116 +215,11 @@ Bump versions intentionally via commit — never rely on floating tags in produc
 qbiq-dig-store/
 ├── backend/                 # FastAPI + Beanie + Redis
 ├── frontend/                # Vue 3 + Vite + Pinia
-├── terraform/               # GCE VM + firewall + IAM
-├── deploy/                  # Production nginx gateway + deploy scripts
-├── .github/workflows/       # CI and deploy pipelines
-├── docker-compose.yml       # Local full stack
+├── deploy/                  # nginx gateway configs for Docker Compose
+├── docker-compose.yml       # Full stack (mongo, redis, backend, frontend, gateway)
 ├── docker-compose.dev.yml   # Hot-reload override
-├── docker-compose.prod.yml  # Production (VM / GAR images)
 └── README.md
 ```
-
-## GCP deployment
-
-Production runs on a **GCE VM** provisioned by Terraform. GitHub Actions builds images, pushes to **Artifact Registry**, and deploys via SSH + Docker Compose.
-
-```mermaid
-flowchart LR
-  GHA[GitHub Actions] --> GAR[Artifact Registry]
-  GHA --> TF[Terraform apply]
-  TF --> VM[GCE VM]
-  GAR -->|docker pull| VM
-  VM --> Gateway[nginx :80]
-  Gateway --> FE[frontend]
-  Gateway -->|/api| BE[backend]
-  BE --> Mongo[(mongo)]
-  BE --> Redis[(redis)]
-```
-
-### One-time GCP setup
-
-1. Create a GCP project with billing enabled.
-2. Enable APIs: **Compute Engine**, **Artifact Registry**, **IAM**.
-3. Create an Artifact Registry repository:
-   ```bash
-   gcloud artifacts repositories create qbiq-dig-store \
-     --repository-format=docker \
-     --location=us-central1
-   ```
-4. Create a GCS bucket for Terraform state:
-   ```bash
-   gsutil mb -l us-central1 gs://YOUR_PROJECT_ID-terraform-state
-   ```
-5. Create a deployer service account with roles:
-   - `roles/compute.admin`
-   - `roles/iam.serviceAccountUser`
-   - `roles/artifactregistry.admin`
-   - `roles/storage.admin` (Terraform state bucket)
-6. Download a JSON key for the service account (or configure Workload Identity Federation).
-
-### Terraform (local)
-
-```bash
-cd terraform
-cp terraform.tfvars.example terraform.tfvars   # edit project_id
-cp backend.hcl.example backend.hcl             # edit bucket name
-
-terraform init -backend-config=backend.hcl
-terraform plan
-terraform apply
-```
-
-Outputs include `public_ip`, `app_url`, and `ssh_command`.
-
-### GitHub secrets
-
-| Secret | Description |
-|--------|-------------|
-| `GCP_PROJECT_ID` | GCP project ID |
-| `GCP_SA_KEY` | Service account JSON key |
-| `TF_STATE_BUCKET` | GCS bucket for Terraform state |
-
-### CI/CD workflows
-
-| Workflow | Trigger | Actions |
-|----------|---------|---------|
-| `ci.yml` | Pull requests + push to `main` | pytest, vitest, terraform validate, Docker build smoke |
-| `deploy.yml` | Push to `main` | terraform apply, build/push images, SSH deploy to VM |
-| `clear-volumes.yml` | Manual (`workflow_dispatch`) | Wipe MongoDB volume on prod VM and restart stack |
-
-### Production compose
-
-On the VM, `/opt/qbiq-dig-store/docker-compose.prod.yml` runs:
-
-- **gateway** — nginx on port 80 (`/` → frontend, `/api` → backend)
-- **frontend** — static SPA (built with `VITE_API_BASE_URL=/api`)
-- **backend**, **mongo**, **redis** — internal network only (no host ports for DB)
-
-See `deploy/.env.prod.example` for required environment variables.
-
-### Rollback
-
-Redeploy a previous commit SHA:
-
-```bash
-# On VM, set IMAGE_TAG to a previous git SHA in /opt/qbiq-dig-store/.env.prod
-sudo REGISTRY=... IMAGE_TAG=<previous-sha> /opt/qbiq-dig-store/remote-deploy.sh
-```
-
-Or re-run the deploy workflow on an earlier commit via **workflow_dispatch**.
-
-## Implementation phases
-
-| Phase | Status | Description |
-|-------|--------|-------------|
-| 0 | Done | Monorepo scaffold, pinned deps |
-| 1 | Done | Products API + MongoDB + Redis cache |
-| 2 | Done | Cart API + Redis sessions |
-| 3 | Done | Frontend types, API client, router, store |
-| 4 | Done | Product list, detail, cart pages + PrimeVue UI |
-| 5 | Done | Docker Compose, tests, documentation |
-| 6 | Done | Network retry / offline resilience |
-| 7 | Done | Terraform + GCP + GitHub Actions deploy |
 
 ## License
 

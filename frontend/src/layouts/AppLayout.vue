@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { RouterView } from 'vue-router'
 
 import AppHeader from '@/components/AppHeader.vue'
@@ -10,11 +10,21 @@ import { useNetworkStore } from '@/stores/network'
 const cartStore = useCartStore()
 const networkStore = useNetworkStore()
 
+let unregisterReconnect: (() => void) | undefined
+
 onMounted(() => {
   networkStore.initListeners()
   void cartStore.fetchCart().catch(() => {
     // Badge stays empty when backend is unavailable during development.
   })
+
+  unregisterReconnect = networkStore.onReconnect(() => {
+    void cartStore.fetchCart().catch(() => undefined)
+  })
+})
+
+onUnmounted(() => {
+  unregisterReconnect?.()
 })
 </script>
 
