@@ -23,6 +23,11 @@ const router = createRouter({
       component: () => import('@/pages/CartPage.vue'),
     },
     {
+      path: '/checkout/success/:orderId',
+      name: 'checkout-success',
+      component: () => import('@/pages/CheckoutSuccessPage.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/pages/NotFoundPage.vue'),

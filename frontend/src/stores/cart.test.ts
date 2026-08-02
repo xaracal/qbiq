@@ -2,8 +2,9 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import * as cartApi from '@/api/cart'
+import * as checkoutApi from '@/api/checkout'
 import { useCartStore } from '@/stores/cart'
-import type { Cart, CartItem } from '@/types'
+import type { Cart, CartItem, Order } from '@/types'
 
 vi.mock('@/api/cart', () => ({
   fetchCart: vi.fn(),
@@ -11,6 +12,10 @@ vi.mock('@/api/cart', () => ({
   updateCartItemQuantity: vi.fn(),
   removeCartItem: vi.fn(),
   clearCart: vi.fn(),
+}))
+
+vi.mock('@/api/checkout', () => ({
+  checkout: vi.fn(),
 }))
 
 const sampleItem: CartItem = {
@@ -97,6 +102,39 @@ describe('useCartStore', () => {
 
     expect(store.items).toEqual([])
     expect(store.total).toBe(0)
+  })
+
+  it('checkout clears cart and returns order', async () => {
+    const order: Order = {
+      id: 'order-1',
+      sessionId: 'session-1',
+      items: sampleCart.items,
+      total: 39.98,
+      status: 'completed',
+      createdAt: '2026-01-01T00:00:00.000Z',
+    }
+    vi.mocked(checkoutApi.checkout).mockResolvedValue(order)
+    const store = useCartStore()
+    store.applyCart(sampleCart)
+
+    const result = await store.checkout()
+
+    expect(checkoutApi.checkout).toHaveBeenCalled()
+    expect(result).toEqual(order)
+    expect(store.items).toEqual([])
+    expect(store.total).toBe(0)
+  })
+
+  it('rolls back optimistic update when checkout fails', async () => {
+    vi.mocked(checkoutApi.checkout).mockRejectedValue(new Error('Network error'))
+    const store = useCartStore()
+    store.applyCart(sampleCart)
+
+    await expect(store.checkout()).rejects.toThrow('Network error')
+
+    expect(store.items).toEqual(sampleCart.items)
+    expect(store.total).toBe(sampleCart.total)
+    expect(store.error).toBe('Network error')
   })
 
   it('rolls back optimistic update when API call fails', async () => {

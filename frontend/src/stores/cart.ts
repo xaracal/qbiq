@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 
 import * as cartApi from '@/api/cart'
+import * as checkoutApi from '@/api/checkout'
 import { getErrorMessage } from '@/api/errors'
-import type { CartItem } from '@/types'
+import type { CartItem, Order } from '@/types'
 
 interface CartState {
   items: CartItem[]
@@ -168,6 +169,21 @@ export const useCartStore = defineStore('cart', {
       try {
         const cart = await cartApi.clearCart()
         this.applyCart(cart)
+      } catch (error) {
+        this.restoreSnapshot(previous)
+        this.error = getErrorMessage(error)
+        throw error
+      }
+    },
+
+    async checkout(): Promise<Order> {
+      const previous = this.snapshot()
+      this.applyCart({ items: [], total: 0 })
+      this.error = null
+
+      try {
+        const order = await checkoutApi.checkout()
+        return order
       } catch (error) {
         this.restoreSnapshot(previous)
         this.error = getErrorMessage(error)

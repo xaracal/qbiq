@@ -47,3 +47,12 @@ export interface AddToCartPayload {
 export interface UpdateCartQuantityPayload {
   quantity: number
 }
+
+export interface Order {
+  id: string
+  sessionId: string
+  items: CartItem[]
+  total: number
+  status: 'completed'
+  createdAt: string
+}

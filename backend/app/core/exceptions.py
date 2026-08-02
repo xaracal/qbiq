@@ -13,3 +13,14 @@ class CartItemNotFoundError(Exception):
 class CartStorageUnavailableError(Exception):
     def __init__(self) -> None:
         super().__init__("Cart storage is unavailable")
+
+
+class EmptyCartError(Exception):
+    def __init__(self) -> None:
+        super().__init__("Cart is empty")
+
+
+class OrderNotFoundError(Exception):
+    def __init__(self, order_id: str) -> None:
+        self.order_id = order_id
+        super().__init__(f"Order not found: {order_id}")

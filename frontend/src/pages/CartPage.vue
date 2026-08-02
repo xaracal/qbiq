@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { MinusIcon, PlusIcon, ShoppingBagIcon, Trash2Icon } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import { storeToRefs } from 'pinia'
@@ -14,6 +15,7 @@ import { formatPrice } from '@/lib/format'
 import { useCartStore } from '@/stores/cart'
 
 const cartStore = useCartStore()
+const router = useRouter()
 const { items, total, loading, error } = storeToRefs(cartStore)
 
 const checkoutLoading = ref(false)
@@ -57,10 +59,8 @@ async function removeItem(productId: string) {
 async function handleCheckout() {
   checkoutLoading.value = true
   try {
-    await cartStore.clearCart()
-    toast.success('Checkout complete', {
-      description: 'Your order has been placed. This is a mock checkout.',
-    })
+    const order = await cartStore.checkout()
+    await router.push({ name: 'checkout-success', params: { orderId: order.id } })
   } catch (err) {
     toast.error('Checkout failed', {
       description: getErrorMessage(err),
